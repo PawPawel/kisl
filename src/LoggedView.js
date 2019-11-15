@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from "react-bootstrap";
+import { Button, Table, Navbar, Accordion, Card, ListGroup} from "react-bootstrap";
 import './App.css';
 
 class LoggedView extends Component {
@@ -9,21 +9,79 @@ class LoggedView extends Component {
             name: "Jan",
             surname: "Kowalski",
             email: "some@email.com",
-            login: ""
+            login: "",
+            groups: ["grupa1", "grupa2", "grupa3"]
         }
     }
 
     componentDidMount(){
-        this.setState({login: this.props.login });
+        this.setState({login: this.props.login});
     }
 
-    render() {
+    createListItem(item){
         return(
-        <div class="user-info">
-            <h1> {this.state.name} {this.state.surname} </h1>
-            <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
-                Wyloguj
-            </Button>
+            <ListGroup.Item key={item}>{item}</ListGroup.Item>
+        )
+    }
+    
+    render() {
+        console.log(this.state.groups);
+        return(
+        <div className="user-info">
+            <Navbar className="logged-header">
+               <Navbar.Brand id="nav-header"> Witaj, {this.state.login} </Navbar.Brand>
+               <Navbar.Collapse className="justify-content-end">
+                    <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
+                            Zmień hasło
+                    </Button>
+                    <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
+                            Wyloguj
+                    </Button>
+                </Navbar.Collapse>
+            </Navbar>
+            <div className="user-container">
+                <Table striped bordered hover variant="dark">
+                    <tbody>
+                        <tr>
+                            <th> Imię i nazwisko </th>
+                            <td>{this.state.name} {this.state.surname}</td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Login
+                            </th>
+                            <td>
+                                {this.state.login}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Email
+                            </th>
+                            <td>
+                                {this.state.email}
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <Accordion id="groups-accordion">
+                    <Card>
+                        <Card.Header>
+                            <Accordion.Toggle as={Button} variant="info" eventKey="0">
+                                Pokaż Grupy
+                            </Accordion.Toggle>
+                        </Card.Header>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <ListGroup>
+                                    {this.state.groups.map((i) => this.createListItem(i))}
+                                </ListGroup>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
+            </div>
+
         </div>
         )
     }
