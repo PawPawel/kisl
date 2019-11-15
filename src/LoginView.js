@@ -8,20 +8,16 @@ class LoginView extends Component {
     constructor(props) {
         super(props);
         this.state={
-            email:"",
+            login:"",
             password:""
         }
     }
 
-    register() {
-
-    }
-
     login() {
         console.log("Logging");
-        console.log(this.state.email);
-        Cookies.set('user', this.state.email);
-        this.props.logUser(this.state.email);
+        console.log(this.state.login);
+        Cookies.set('user', this.state.login);
+        this.props.logUser(this.state.login);
     }
 
     savePassword(pass) {
@@ -33,15 +29,15 @@ class LoginView extends Component {
         return(
         <div>
             <Form>
-                <Form.Group controlId="formEmail">
-                    <Form.Label>Email </Form.Label>
-                    <Form.Control type="email" placeholder="Email" onChange={e => this.setState({email: e.target.value})}/>
+                <Form.Group controlId="formlogin">
+                    <Form.Label>Login </Form.Label>
+                    <Form.Control type="text" placeholder="Login" onChange={e => this.setState({login: e.target.value})}/>
                 </Form.Group>
                 <Form.Group controlId="formPassword">
                     <Form.Label>Hasło </Form.Label>
                     <Form.Control type="password" placeholder="Hasło" onChange={e => this.savePassword(e.target.value)}/>
                 </Form.Group>
-                <Button variant="outline-info" type="submit" className="form-button" onClick={this.register()}>
+                <Button variant="outline-info" type="submit" className="form-button">
                     Zarejestruj
                 </Button>
                 <Button variant="info" className="form-button" onClick={() => this.login()}>

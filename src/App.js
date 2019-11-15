@@ -12,6 +12,7 @@ class App extends Component {
         user:""
       }
       this.logUser = this.logUser.bind(this);
+      this.logout = this.logout.bind(this);
     }
 
     componentDidMount() {
@@ -21,16 +22,21 @@ class App extends Component {
     }
 
     logUser(username){
+      console.log("username: ", username);
       this.setState({logged: true, user: username});
+    }
+
+    logout(){
+      Cookies.remove('user');
+      this.setState({logged:false, user: ""});
     }
 
     render(){
       if(this.state.logged){
         return (
           <div className="App">
-            <header className="App-header">
-              <p>Witaj, {this.state.user}</p>
-              <LoggedView email={this.state.user} />
+            <header>
+              <LoggedView login={this.state.user} logout={this.logout}/>
             </header>
           </div>
         );

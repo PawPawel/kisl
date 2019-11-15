@@ -5,21 +5,25 @@ import './App.css';
 class LoggedView extends Component {
     constructor(props) {
         super(props);
-        this.state={
-            email:""
+        this.state = {
+            name: "Jan",
+            surname: "Kowalski",
+            email: "some@email.com",
+            login: ""
         }
     }
 
     componentDidMount(){
-        this.setState({email: this.props.email});
+        this.setState({login: this.props.login });
     }
 
     render() {
         return(
-        <div>
-            <Button variant="info" className="form-button" onClick={() => this.login()}>
-                    Zaloguj
-                </Button>
+        <div class="user-info">
+            <h1> {this.state.name} {this.state.surname} </h1>
+            <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
+                Wyloguj
+            </Button>
         </div>
         )
     }
