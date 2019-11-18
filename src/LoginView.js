@@ -3,26 +3,29 @@ import { Form, Button } from "react-bootstrap";
 import './App.css';
 import passwordHash from "password-hash";
 import Cookies from 'js-cookie'
+import authenticate from './utils';
 
 class LoginView extends Component {
     constructor(props) {
         super(props);
         this.state={
             login:"",
-            password:""
+            password:"", 
+            customers: []
         }
     }
 
-    login() {
-        console.log("Logging");
-        console.log(this.state.login);
+ 
+    login = async () => {
+        const res = await authenticate(this.state.login, this.state.password)
+        console.log("Logging", res);
         Cookies.set('user', this.state.login);
         this.props.logUser(this.state.login);
     }
 
     savePassword(pass) {
-        var hashedPass = passwordHash.generate(pass);
-        this.setState({password: hashedPass});
+        //var hashedPass = passwordHash.generate(pass);
+        this.setState({password: pass});
     }
 
     render() {

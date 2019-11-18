@@ -22,7 +22,7 @@ class App extends Component {
     }
 
     logUser(username){
-      console.log("username: ", username);
+      //console.log("username: ", username);
       this.setState({logged: true, user: username});
     }
 

@@ -25,7 +25,6 @@ class LoggedView extends Component {
     }
     
     render() {
-        console.log(this.state.groups);
         return(
         <div className="user-info">
             <Navbar className="logged-header">
