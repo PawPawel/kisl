@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Button, Table, Navbar, Accordion, Card, ListGroup} from "react-bootstrap";
 import './App.css';
+import makeCall from './utils';
 
 class LoggedView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "Jan",
-            surname: "Kowalski",
-            email: "some@email.com",
+			user: {},
+            name: "",
+			lastname:"",
+            email: "",
             login: "",
             groups: ["grupa1", "grupa2", "grupa3"]
         }
@@ -16,8 +18,29 @@ class LoggedView extends Component {
 
     componentDidMount(){
         this.setState({login: this.props.login});
+		this.getUserData();
+		this.getGroups();
     }
 
+    getUserData = async () => {
+		var usrLogin = this.props.login+'@ask.local';
+		const data = {
+			username: usrLogin
+		}
+		const res = await makeCall('/api/user', data);
+		this.setState({user: res, name: res.givenName, lastname: res.sn, email: res.userPrincipalName});
+    }
+	
+	getGroups = async () => {
+		var usrLogin = this.props.login+'@ask.local';
+		const data = {
+			username: usrLogin
+		}
+		const res = await makeCall('/api/groups', data);
+		var groups = res.map(item => item['cn']);
+		this.setState({groups});
+	}
+	
     createListItem(item){
         return(
             <ListGroup.Item key={item}>{item}</ListGroup.Item>
@@ -43,7 +66,7 @@ class LoggedView extends Component {
                     <tbody>
                         <tr>
                             <th> Imię i nazwisko </th>
-                            <td>{this.state.name} {this.state.surname}</td>
+                            <td>{this.state.name} {this.state.lastname}</td>
                         </tr>
                         <tr>
                             <th>

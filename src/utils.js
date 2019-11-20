@@ -1,12 +1,5 @@
-import { userInfo } from "os";
-
-const authenticate = async(username, password) => {
-    const data = {
-        email: "sam@corcos.io"
-      }
-      console.log(data);
-
-    const response = await fetch('/api/activedirectory', {
+const makeCall = async(url, data) => {
+	const response = await fetch(url, {
         method: "POST",
         headers: {
           'Accept': 'application/json',
@@ -16,8 +9,7 @@ const authenticate = async(username, password) => {
     });
 
     const json = await response.json();
-    console.log(json);
     return json;
-};
+}
 
-export default authenticate;
+export default makeCall;
