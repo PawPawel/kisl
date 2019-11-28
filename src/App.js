@@ -45,7 +45,6 @@ class App extends Component {
         return (
           <div className="App">
             <header className="App-header">
-              <p>Witaj na naszej stronie!</p>
               <LoginView logUser={this.logUser} />
             </header>
           </div>
