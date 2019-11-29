@@ -66,9 +66,9 @@ app.post('/api/auth', (req, res) => {
 });
 
 app.post('/api/findEmail', (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   ad.getGroupMembershipForUser(req.body.username, function(err, groups) { //zmienic na szukanie czy mail w bazie
-	if (err) {
+	if (err) { //spróbuj funkcji find
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
 	}

@@ -53,14 +53,19 @@ class LoginView extends Component {
     }    
 
     sendEmail = async () => {
-        console.log("aaa");
+        //console.log("aaa");
         if(this.state.email != ''){
             const data = {
                 email: this.state.email
             }
             const res = await makeCall('/api/findEmail', data);
-            console.log(res);
+            //console.log(res);
+            if(res === 'confirmed')
+            {                  
+                this.setState({message: 'Wysłano maila na adres:' + this.state.email});
+            }
         }
+        else this.setState({message: 'nie podano maila'});
     };
 
     render() {        
@@ -97,12 +102,9 @@ class LoginView extends Component {
                             <Form.Label>Wprowadź adres e-mail aby zresetować swoje hasło</Form.Label>
                             <Form.Control type="email" placeholder="Email"  onChange={e => this.setState({email: e.target.value})}/>
                         </Form.Group>   
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" >
                         Resetuj hasło
-                        </Button>  
-                        <Button variant="secondary" onClick={() => {this.setState({showResetPasswordForm: false})}}>
-                        Zamknij
-                    </Button>                   
+                        </Button>                          
                     </Form>                    
                     </Modal.Body>                    
                 </Modal>
