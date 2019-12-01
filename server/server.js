@@ -66,16 +66,15 @@ app.post('/api/auth', (req, res) => {
 });
 
 app.post('/api/findEmail', (req, res) => {
-  //console.log(req.body);
-  ad.getGroupMembershipForUser(req.body.username, function(err, groups) { //zmienic na szukanie czy mail w bazie
-	if (err) { //spróbuj funkcji find
-		console.log('ERROR: ' +JSON.stringify(err));
-		return;
-	}
- 
-    if (! groups) console.log('User: ' + req.body.username + ' not found.');
-    else res.json(groups);
- });
+  console.log(req.body);
+  ad.find(req.body.email, function(err, user) {
+    console.log(user.user);
+    if (err) {
+      console.log('ERROR: ' +JSON.stringify(err));
+      return;
+    }
+  });
+  
 });
 
 const port = 5000;

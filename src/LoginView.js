@@ -53,7 +53,7 @@ class LoginView extends Component {
     }    
 
     sendEmail = async () => {
-        //console.log("aaa");
+        console.log("aaa");
         if(this.state.email != ''){
             const data = {
                 email: this.state.email
