@@ -28,8 +28,10 @@ class LoginView extends Component {
             }
             const res = await makeCall('/api/auth', data);
             console.log("Logging", res);
-            if(res === 'authenticated')
+            if(res !== 'failed')
             {  
+                console.log(res);
+                localStorage.setItem('valToken', res);
                 Cookies.set('user', this.state.login);
                 
                 const path = `/userProfile/${this.state.login}`;

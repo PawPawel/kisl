@@ -17,13 +17,25 @@ class LoggedView extends Component {
         }
     }
 
-    componentDidMount(){
-        this.setState({login: this.props.match.params.username}, 	
-            function() { 
-                this.getUserData();
-                this.getGroups();
-             }
-        );
+    async componentDidMount(){
+        const data = {
+            username: this.props.match.params.username+'@ask.local',
+			token: localStorage.getItem('valToken')
+		}
+        const res = await makeCall('/api/validateToken', data);
+        console.log(res);
+        if(res === 'invalid'){
+            const path = `/login`;
+            this.props.history.push(path);
+        }
+        else{
+            this.setState({login: this.props.match.params.username}, 	
+                function() { 
+                    this.getUserData();
+                    this.getGroups();
+                }
+            );
+        }
     }
 
     getUserData = async () => {
@@ -32,12 +44,9 @@ class LoggedView extends Component {
 		}
 		const res = await makeCall('/api/user', data);
 		this.setState({user: res, name: res.givenName, lastname: res.sn, email: res.userPrincipalName});
-    
-        console.log(this.state);
     }
 	
 	getGroups = async () => {
-        console.log("login2:" , this.state.login);
 		const data = {
 			username: this.state.login + '@ask.local'
 		}

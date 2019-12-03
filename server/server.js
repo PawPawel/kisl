@@ -2,6 +2,8 @@ const express = require('express');
 const ActiveDirectory = require('activedirectory');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
+const jwt  = require('jsonwebtoken');
+const fs   = require('fs');
 
 const app = express();
 const nodemailer = require('nodemailer');
@@ -17,12 +19,13 @@ var config = { url: 'ldap://192.168.56.103',
 
 var ad = new ActiveDirectory(config);
 
+var userTokens = [];
+
 app.post('/api/auth', (req, res) => {
   var decipher = crypto.createDecipher('aes-256-ctr', req.body.username);
   var dec = decipher.update(req.body.password,'hex','utf8')
   dec += decipher.final('utf8');
 
-  console.log(req.body);
   ad.authenticate(req.body.username, dec, function(err, auth) {
     if (err) {
       console.log('ERROR: '+JSON.stringify(err));
@@ -31,7 +34,25 @@ app.post('/api/auth', (req, res) => {
     }
     if (auth) {
       console.log('Authenticated!');
-      res.json('authenticated');
+      var issuer = req.headers.origin;
+      var sub = req.body.username;
+      var aud =req.headers['x-forwarded-host'];
+
+      var signOptions = {
+        issuer:  issuer,
+        subject:  sub,
+        audience:  aud,
+        expiresIn:  "10m",
+        algorithm:  "RS256"
+       };
+       var payload = {
+         user: req.body.username
+       }
+       var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');
+
+       var token = jwt.sign(payload, privateKEY, signOptions);
+       userTokens.push(token);
+      res.json(token);
     }
     else {
       console.log('Authentication failed!');
@@ -46,13 +67,49 @@ app.post('/api/auth', (req, res) => {
 		return;
 	  }
 	 
-	  if (! user) console.log('User: ' + req.body.username + ' not found.');
+	  if (!user) console.log('User: ' + req.body.username + ' not found.');
 	  else {
 		  res.json(user);
 	  }
 	});
  });
 });
+
+function verify(token, data){
+  var verifyOptions = {
+    issuer:  data.issuer,
+    subject:  data.subject,
+    audience:  data.audience,
+    expiresIn:  "10m",
+    algorithm:  ["RS256"]
+   };
+   var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
+   console.log("data: ", data)
+   console.log(jwt.decode(token))
+   try {
+    return jwt.verify(token, publicKEY, verifyOptions);
+   } catch(err){
+     console.log(err);
+     return false;
+   }
+}
+
+app.post('/api/validateToken', (req, res) => {
+  let data = {
+    issuer: req.headers.origin,
+    subject: req.body.username,
+    audience: req.headers['x-forwarded-host']
+  }
+  //console.log("data",data);
+  let result = verify(req.body.token, data)
+  //console.log("result", result);
+  if(result){
+    console.log("verified");
+    res.json('verified')
+  } else{
+    res.json('invalid')
+  }
+ });
 
  app.post('/api/groups', (req, res) => {
   ad.getGroupMembershipForUser(req.body.username, function(err, groups) {
