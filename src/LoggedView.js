@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, Table, Navbar, Accordion, Card, ListGroup} from "react-bootstrap";
 import './App.css';
 import makeCall from './utils';
+import Cookies from 'js-cookie';
 
 class LoggedView extends Component {
     constructor(props) {
@@ -17,34 +18,46 @@ class LoggedView extends Component {
     }
 
     componentDidMount(){
-        this.setState({login: this.props.login});
-		this.getUserData();
-		this.getGroups();
+        this.setState({login: this.props.match.params.username}, 	
+            function() { 
+                this.getUserData();
+                this.getGroups();
+             }
+        );
     }
 
     getUserData = async () => {
-		var usrLogin = this.props.login+'@ask.local';
 		const data = {
-			username: usrLogin
+			username: this.state.login
 		}
 		const res = await makeCall('/api/user', data);
 		this.setState({user: res, name: res.givenName, lastname: res.sn, email: res.userPrincipalName});
+    
+        console.log(this.state);
     }
 	
 	getGroups = async () => {
-		var usrLogin = this.props.login+'@ask.local';
+        console.log("login2:" , this.state.login);
 		const data = {
-			username: usrLogin
+			username: this.state.login + '@ask.local'
 		}
 		const res = await makeCall('/api/groups', data);
 		var groups = res.map(item => item['cn']);
-		this.setState({groups});
+        this.setState({groups});
+        console.log(this.state);
 	}
 	
     createListItem(item){
         return(
             <ListGroup.Item key={item}>{item}</ListGroup.Item>
         )
+    }
+
+    logout(){
+        Cookies.remove('user');
+        this.setState({logged:false, user: ""});
+        const path = `/login`;
+        this.props.history.push(path);
     }
     
     render() {
@@ -56,7 +69,7 @@ class LoggedView extends Component {
                     <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
                             Zmień hasło
                     </Button>
-                    <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
+                    <Button variant="info" className="form-button" onClick={() => this.logout()}>
                             Wyloguj
                     </Button>
                 </Navbar.Collapse>

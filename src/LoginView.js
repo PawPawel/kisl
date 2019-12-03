@@ -18,7 +18,7 @@ class LoginView extends Component {
             email: ""
         }
     }
- 
+
     login = async () => {
         if(this.state.captcha){
             var usrLogin = this.state.login+'@ask.local';
@@ -31,7 +31,9 @@ class LoginView extends Component {
             if(res === 'authenticated')
             {  
                 Cookies.set('user', this.state.login);
-                this.props.logUser(this.state.login);
+                
+                const path = `/userProfile/${this.state.login}`;
+                this.props.history.push(path);
             }
             else {
                 this.setState({message: 'Nieprawidlowe dane logowania'});
@@ -54,7 +56,7 @@ class LoginView extends Component {
 
     sendEmail = async () => {
         console.log("aaa");
-        if(this.state.email != ''){
+        if(this.state.email !== ''){
             const data = {
                 email: this.state.email
             }
@@ -70,6 +72,7 @@ class LoginView extends Component {
 
     render() {        
             return(
+            <header className="App-header">
             <div>
                 <p>{this.state.message}</p>
                 <Form onKeyPress={event => {if (event.key === "Enter") {this.login();}}} >
@@ -109,6 +112,7 @@ class LoginView extends Component {
                     </Modal.Body>                    
                 </Modal>
             </div>
+            </header>
             )        
     }
 }
