@@ -10,8 +10,8 @@ const Routes = () => (
     <Switch>
       <Route exact path="/" component={LoginView} />
       <Route exact path="/login" component={LoginView} />
-      <Route exact path="/reset/" component={ResetPassword} />
-      <Route exact path="/userProfile/:username" component={LoggedView} />
+      <Route exact path="/reset/:token" component={ResetPassword} />
+      <Route exact path="/userProfile/:username" component={LoggedView} />      
     </Switch>
     </BrowserRouter>
   </div>

@@ -63,6 +63,7 @@ class LoggedView extends Component {
     }
 
     logout(){
+        localStorage.removeItem('valToken')
         Cookies.remove('user');
         this.setState({logged:false, user: ""});
         const path = `/login`;

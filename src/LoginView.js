@@ -21,7 +21,7 @@ class LoginView extends Component {
 
     login = async () => {
         if(this.state.captcha){
-            var usrLogin = this.state.login+'@ask.local';
+            var usrLogin = this.state.login+'@ask.local';           
             const data = {
                 username: usrLogin,
                 password: this.state.password
@@ -57,7 +57,7 @@ class LoginView extends Component {
     }    
 
     sendEmail = async () => {
-        console.log("aaa");
+        
         if(this.state.email !== ''){
             const data = {
                 email: this.state.email
@@ -65,8 +65,8 @@ class LoginView extends Component {
             const res = await makeCall('/api/findEmail', data);
             //console.log(res);
             if(res === 'confirmed')
-            {                  
-                this.setState({message: 'Wysłano maila na adres:' + this.state.email});
+            {       
+                this.setState({message: 'Wysłano maila na adres:' + this.state.email});                
             }
         }
         else this.setState({message: 'nie podano maila'});

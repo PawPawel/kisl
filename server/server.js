@@ -19,7 +19,7 @@ var config = { url: 'ldap://192.168.56.103',
 
 var ad = new ActiveDirectory(config);
 
-var userTokens = [];
+var resetTokens = [];
 
 app.post('/api/auth', (req, res) => {
   var decipher = crypto.createDecipher('aes-256-ctr', req.body.username);
@@ -51,7 +51,6 @@ app.post('/api/auth', (req, res) => {
        var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');
 
        var token = jwt.sign(payload, privateKEY, signOptions);
-       userTokens.push(token);
       res.json(token);
     }
     else {
@@ -123,6 +122,11 @@ app.post('/api/validateToken', (req, res) => {
  });
 });
 
+app.post('/api/reset_token', (req, res) => {
+  console.log(req.body.resetPasswordToken);
+  //
+});
+
 app.post('/api/findEmail', (req, res) => {
   var query = 'cn=*';
   var foundUser;    
@@ -134,26 +138,27 @@ app.post('/api/findEmail', (req, res) => {
    users.forEach(element => {
     if(element.mail){           
       if(element.mail === req.body.email){
-        foundUser= element;   
-        
+        foundUser= element; 
       }
     }
    });     
-   if(!foundUser){
-   res.json('email not in db');
+   if(!foundUser){   
    return;
   }
-   else {        
-        const token = crypto.randomBytes(20).toString('hex');        
-        var retUser = {
-          user: foundUser,
-          token: token,
-          tokenExpires: Date.now()+360000
-        }
-        console.log("dane");
-        console.log(retUser.user);
-        console.log(retUser.token);
-        console.log(retUser.tokenExpires);
+   else {     
+    var signOptions = {
+      issuer:  req.headers.origin,
+      subject:  foundUser.sAMAccountName+'@ask.local',
+      audience:  req.headers['x-forwarded-host'],
+      expiresIn:  "1h",
+      algorithm:  "RS256"
+    };          
+    var payload = {
+      username: foundUser.sAMAccountName
+     }
+    var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');    
+    var jwt_token = jwt.sign(payload, privateKEY, signOptions);    
+
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -163,12 +168,12 @@ app.post('/api/findEmail', (req, res) => {
       });
       const mailOptions = {
         from: 'ask@gmail.com',
-        to: `${retUser.user.mail}`,
+        to: `${foundUser.mail}`,
         subject: 'Link To Reset Password',
         text:
           'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
           + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
-          + `http://localhost:3031/reset/${retUser.token}\n\n`
+          + `http://localhost:3001/reset/${jwt_token}\n\n`
           + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
       };
       transporter.sendMail(mailOptions, (err, response) => {
@@ -176,7 +181,25 @@ app.post('/api/findEmail', (req, res) => {
           console.error('there was an error sending email: ', err);
         } else {
           console.log('here is the res: ', response);
-          res.status(200).json('recovery email sent');
+          res.status(200).json(jwt_token);
+
+          const token_mail_pair={
+            token: jwt_token,
+            mail: foundUser.mail
+          }
+          var found=false;
+          resetTokens.forEach(element => {
+            if(element.mail === token_mail_pair.mail){           
+              element = token_mail_pair;
+              found=true;
+            }
+           }); 
+           if(found===false){
+            resetTokens.push(token_mail_pair);
+           }         
+
+          const path = `/reset/${jwt_token}`;
+          this.props.history.push(path);
         }
       });
     }
