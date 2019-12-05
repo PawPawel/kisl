@@ -42,7 +42,7 @@ app.post('/api/auth', (req, res) => {
         issuer:  issuer,
         subject:  sub,
         audience:  aud,
-        expiresIn:  "10m",
+        expiresIn:  "1m",
         algorithm:  "RS256"
        };
        var payload = {
@@ -79,7 +79,7 @@ function verify(token, data){
     issuer:  data.issuer,
     subject:  data.subject,
     audience:  data.audience,
-    expiresIn:  "10m",
+    expiresIn:  "1m",
     algorithm:  ["RS256"]
    };
    var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
@@ -124,23 +124,34 @@ app.post('/api/validateToken', (req, res) => {
 
 app.post('/api/reset_token', (req, res) => {
   //console.log(req.body.resetPasswordToken);  
-  // var verifyOptions = {
-  //   issuer:  req.headers.origin,
-  //   subject:  foundUser.sAMAccountName+'@ask.local',
-  //   audience:  req.headers['x-forwarded-host'],
-  //   expiresIn:  "1h",
-  //   algorithm:  "RS256"
-  //  };
-  // var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
-  // let result = jwt.verify(token, publicKEY, verifyOptions);
+    var token_mail_pair;
+  resetTokens.forEach(element => {
+    if(element.token === req.body.resetPasswordToken){           
+      token_mail_pair=element;
+      }
+   });
+   if(token_mail_pair!==undefined){
+    var verifyOptions = {
+      issuer:  req.headers.origin,
+      subject:  token_mail_pair.mail,
+      audience:  req.headers['x-forwarded-host'],
+      expiresIn:  "1h",
+      algorithm:  "RS256"
+     };
+    var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
+    let result = jwt.verify(token, publicKEY, verifyOptions);
+    if(result){
+      console.log("verified");
+      res.json('verified')
+    } else{
+      res.json('invalid')
+    }
+   }
+   else{
+    res.json('invalid')
+  }
 
-  // var passed=false;
-  // resetTokens.forEach(element => {
-  //   if(element.token === req.body.resetPasswordToken){           
-  //     element = token_mail_pair;
-  //     found=true;
-  //   }
-  //  });
+  
 });
 
 app.post('/api/findEmail', (req, res) => {
@@ -164,7 +175,7 @@ app.post('/api/findEmail', (req, res) => {
    else {       
     var signOptions = {
       issuer:  req.headers.origin,
-      subject:  foundUser.sAMAccountName+'@ask.local',
+      subject:  foundUser.mail,
       audience:  req.headers['x-forwarded-host'],
       expiresIn:  "1h",
       algorithm:  "RS256"

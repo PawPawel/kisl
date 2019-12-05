@@ -17,7 +17,10 @@ class ResetPassword extends Component {
         resetPasswordToken: this.props.match.params.token
       }
       const res = await makeCall('/api/reset_token', data);
-
+      if(res === 'invalid'){
+        const path = `/login`;
+        this.props.history.push(path);
+    }    
     }
 }
 
