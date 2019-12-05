@@ -56,66 +56,68 @@ class LoginView extends Component {
         this.setState({password: crypted});
     }    
 
-    sendEmail = async () => {
-        
+    sendEmail = async () => {        
         if(this.state.email !== ''){
             const data = {
                 email: this.state.email
             }
             const res = await makeCall('/api/findEmail', data);
-            //console.log(res);
-            if(res === 'confirmed')
+            console.log('here is the res in LoginView: ', res);
+
+            if(res !== undefined)
             {       
                 this.setState({message: 'Wysłano maila na adres:' + this.state.email});                
+                const path = `/reset/${res}`;
+                this.props.history.push(path);
             }
         }
         else this.setState({message: 'nie podano maila'});
     };
 
     render() {        
-            return(
+        return (
             <header className="App-header">
-            <div>
-                <p>{this.state.message}</p>
-                <Form onKeyPress={event => {if (event.key === "Enter") {this.login();}}} >
-                    <Form.Group controlId="formlogin">
-                        <Form.Label>Login </Form.Label>
-                        <Form.Control type="text" placeholder="Login" onChange={e => this.setState({login: e.target.value})}/>
-                    </Form.Group>
-                    <Form.Group controlId="formPassword">
-                        <Form.Label>Haslo </Form.Label>
-                        <Form.Control type="password" placeholder="Haslo" onChange={e => this.savePassword(e.target.value)}/>
-                    </Form.Group>
-                    <ReCAPTCHA
-                        sitekey="6LfIAsQUAAAAAH5PeLOT8b7E5SeJLHjGf3k4NlSZ"
-                        onChange={() => this.setState({captcha: true})}
-                    />                    
-                    <Button variant="outline-info" type="button" className="form-button" onClick={() => {this.setState({showResetPasswordForm: true})}}>
-                    Zapomnialem hasla
-                    </Button>  
-                    <Button variant="info" className="form-button" onClick={() => this.login()}>
-                        Zaloguj
-                    </Button>             
-                </Form>
-                <Modal show={this.state.showResetPasswordForm} onHide={() => {this.setState({showResetPasswordForm: false})}}>
-                    <Modal.Header closeButton>
-                    <Modal.Title>Resetuj hasło</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <Form onSubmit={this.sendEmail}>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Wprowadź adres e-mail aby zresetować swoje hasło</Form.Label>
-                            <Form.Control type="email" placeholder="Email"  onChange={e => this.setState({email: e.target.value})}/>
-                        </Form.Group>   
-                        <Button variant="primary" type="submit" >
-                        Resetuj hasło
-                        </Button>                          
-                    </Form>                    
-                    </Modal.Body>                    
-                </Modal>
-            </div>
+                <div>
+                    <p>{this.state.message}</p>
+                    <Form onKeyPress={event => { if (event.key === "Enter") { this.login(); } }} >
+                        <Form.Group controlId="formlogin">
+                            <Form.Label>Login </Form.Label>
+                            <Form.Control type="text" placeholder="Login" onChange={e => this.setState({ login: e.target.value })} />
+                        </Form.Group>
+                        <Form.Group controlId="formPassword">
+                            <Form.Label>Haslo </Form.Label>
+                            <Form.Control type="password" placeholder="Haslo" onChange={e => this.savePassword(e.target.value)} />
+                        </Form.Group>
+                        <ReCAPTCHA
+                            sitekey="6LfIAsQUAAAAAH5PeLOT8b7E5SeJLHjGf3k4NlSZ"
+                            onChange={() => this.setState({ captcha: true })}
+                        />
+                        <Button variant="outline-info" type="button" className="form-button" onClick={() => { this.setState({ showResetPasswordForm: true }) }}>
+                            Zapomnialem hasla
+                    </Button>
+                        <Button variant="info" className="form-button" onClick={() => this.login()}>
+                            Zaloguj
+                    </Button>
+                    </Form>
+                    <Modal show={this.state.showResetPasswordForm} onHide={() => { this.setState({ showResetPasswordForm: false }) }}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Resetuj hasło</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form onSubmit={this.sendEmail}>
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Wprowadź adres e-mail aby zresetować swoje hasło</Form.Label>
+                                    <Form.Control type="email" placeholder="Email" onChange={e => this.setState({ email: e.target.value })} />
+                                </Form.Group>
+                                <Button variant="primary" type="submit" >
+                                    Resetuj hasło
+                        </Button>
+                            </Form>
+                        </Modal.Body>
+                    </Modal>
+                </div>
             </header>
-            )        
+        )        
     }
 }
 export default LoginView;

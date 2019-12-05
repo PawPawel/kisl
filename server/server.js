@@ -122,12 +122,12 @@ app.post('/api/validateToken', (req, res) => {
  });
 });
 
-app.post('/api/reset_token', (req, res) => {
-  //console.log(req.body.resetPasswordToken);  
+app.post('/api/reset_token', (req, res) => { 
+  console.log('127 w reset tokens',resetTokens); 
     var token_mail_pair;
   resetTokens.forEach(element => {
     if(element.token === req.body.resetPasswordToken){           
-      token_mail_pair=element;
+      token_mail_pair=element;      
       }
    });
    if(token_mail_pair!==undefined){
@@ -139,7 +139,7 @@ app.post('/api/reset_token', (req, res) => {
       algorithm:  "RS256"
      };
     var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
-    let result = jwt.verify(token, publicKEY, verifyOptions);
+    let result = jwt.verify(req.body.resetPasswordToken, publicKEY, verifyOptions);
     if(result){
       console.log("verified");
       res.json('verified')
@@ -150,11 +150,12 @@ app.post('/api/reset_token', (req, res) => {
    else{
     res.json('invalid')
   }
-
-  
 });
 
+
+
 app.post('/api/findEmail', (req, res) => {
+  
   var query = 'cn=*';
   var foundUser;    
   ad.findUsers(query, function(err, users) {
@@ -169,10 +170,12 @@ app.post('/api/findEmail', (req, res) => {
       }
     }
    });     
-   if(!foundUser){   
+   if(!foundUser){ 
+   
    return;
   }
-   else {       
+   else {  
+        
     var signOptions = {
       issuer:  req.headers.origin,
       subject:  foundUser.mail,
@@ -202,36 +205,36 @@ app.post('/api/findEmail', (req, res) => {
           + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
           + `http://localhost:3001/reset/${jwt_token}\n\n`
           + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
-      };
-      transporter.sendMail(mailOptions, (err, response) => {
+      };       
+      transporter.sendMail(mailOptions, (err, response) => {        
         if (err) {
           console.error('there was an error sending email: ', err);
-        } else {
-          console.log('here is the res: ', response);
-          res.status(200).json(jwt_token);
-
+        } else {   
+          console.log('resetTokens before found: ', resetTokens);          
           const token_mail_pair={
             token: jwt_token,
             mail: foundUser.mail
           }
           var found=false;
-          resetTokens.forEach(element => {
-            if(element.mail === token_mail_pair.mail){           
-              element = token_mail_pair;
+          var index=0;
+          resetTokens.forEach(element=> {            
+            if(element.mail === token_mail_pair.mail){               
+              resetTokens[index]= token_mail_pair;   
               found=true;
             }
-           }); 
-           if(found===false){
-            resetTokens.push(token_mail_pair);
-           }         
-
-          const path = `/reset/${jwt_token}`;
-          this.props.history.push(path);
+            index++;
+           });            
+           if(found===false){            
+            resetTokens.push(token_mail_pair);     
+           }            
+          res.json(jwt_token); 
         }
       });
     }
   });
 });
+
+
 
 const port = 5000;
 
