@@ -31,8 +31,6 @@ class LoginView extends Component {
             if(res !== 'failed')
             {  
                 console.log(res);
-                localStorage.setItem('valToken', res);
-                Cookies.set('user', this.state.login);
                 
                 const path = `/userProfile/${this.state.login}`;
                 this.props.history.push(path);
@@ -78,7 +76,7 @@ class LoginView extends Component {
 
     render() {        
         return (
-            <header className="App-header">                
+            <header className="App-header">
                 <p>{this.state.message}</p>
                 <div>
                     <Form onKeyPress={event => { if (event.key === "Enter") { this.login(); } }} >

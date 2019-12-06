@@ -42,7 +42,7 @@ app.post('/api/auth', (req, res) => {
         issuer:  issuer,
         subject:  sub,
         audience:  aud,
-        expiresIn:  "1m",
+        expiresIn:  "10m",
         algorithm:  "RS256"
        };
        var payload = {
@@ -51,7 +51,8 @@ app.post('/api/auth', (req, res) => {
        var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');
 
        var token = jwt.sign(payload, privateKEY, signOptions);
-      res.json(token);
+       res.setHeader('Set-Cookie', `${token}; HttpOnly; expires:1`);
+      res.json('authenticated');
     }
     else {
       console.log('Authentication failed!');
@@ -79,12 +80,10 @@ function verify(token, data){
     issuer:  data.issuer,
     subject:  data.subject,
     audience:  data.audience,
-    expiresIn:  "1m",
+    expiresIn:  "10m",
     algorithm:  ["RS256"]
    };
    var publicKEY  = fs.readFileSync('./dummyPublic.key', 'utf8');
-   console.log("data: ", data)
-   console.log(jwt.decode(token))
    try {
     return jwt.verify(token, publicKEY, verifyOptions);
    } catch(err){
@@ -99,9 +98,7 @@ app.post('/api/validateToken', (req, res) => {
     subject: req.body.username,
     audience: req.headers['x-forwarded-host']
   }
-  //console.log("data",data);
-  let result = verify(req.body.token, data)
-  //console.log("result", result);
+  let result = verify(req.headers.cookie, data)
   if(result){
     console.log("verified");
     res.json('verified')
@@ -117,11 +114,60 @@ app.post('/api/validateToken', (req, res) => {
 		return;
 	}
  
-    if (! groups) console.log('User: ' + req.body.username + ' not found.');
-    else res.json(groups);
+  if (! groups) console.log('User: ' + req.body.username + ' not found.');
+  else res.json(groups);
  });
 });
 
+app.post('/api/findUsers', (req, res) => {
+  var query = 'cn=*';
+  ad.findUsers(query, function(err, users) {
+	  if (err) {
+		console.log('ERROR: ' +JSON.stringify(err));
+		return;
+    }  
+    const userList = users.map(user => {
+      return user.sAMAccountName;
+    });
+    res.json(userList);
+  });
+
+});
+
+app.post('/api/usersForGroup', (req, res) => {
+  ad.getUsersForGroup(req.body.groupName, function(err, users){
+    if (err) {
+      console.log('ERROR: ' +JSON.stringify(err));
+      return;
+    }
+    if (! users) console.log('Group: ' + groupName + ' not found.');
+    else {
+      let response = users.map(u => u.sAMAccountName);
+      res.json(response);
+    }
+  });
+});
+
+app.post('/api/findgroups', (req, res) => {
+  var query = 'CN=*';
+  ad.findGroups(query,  function(err, groups) {
+	  if (err) {
+		console.log('ERROR: ' +JSON.stringify(err));
+		return;
+    }  
+    const groupsList = groups.filter(group => {
+      let dn = group.dn;
+      if(dn.includes("students")){
+        return group;
+      }
+    });
+    //console.log(groupsList);
+    res.json(groupsList);
+  });
+});
+
+//delete_token
+//change_password
 app.post('/api/reset_token', (req, res) => { 
   console.log('127 w reset tokens',resetTokens); 
     var token_mail_pair;
@@ -152,10 +198,7 @@ app.post('/api/reset_token', (req, res) => {
   }
 });
 
-//delete_ token
-//change_password
-
-app.post('/api/findEmail', (req, res) => {  
+app.post('/api/findEmail', (req, res) => {
   var query = 'cn=*';
   var foundUser;    
   ad.findUsers(query, function(err, users) {
