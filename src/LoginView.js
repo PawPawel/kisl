@@ -78,8 +78,7 @@ class LoginView extends Component {
 
     render() {        
         return (
-            <header className="App-header">
-                
+            <header className="App-header">                
                 <p>{this.state.message}</p>
                 <div>
                     <Form onKeyPress={event => { if (event.key === "Enter") { this.login(); } }} >

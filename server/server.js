@@ -142,7 +142,7 @@ app.post('/api/reset_token', (req, res) => {
     let result = jwt.verify(req.body.resetPasswordToken, publicKEY, verifyOptions);
     if(result){
       console.log("verified");
-      res.json('verified')
+      res.json(result.username);
     } else{
       res.json('invalid')
     }
@@ -152,10 +152,10 @@ app.post('/api/reset_token', (req, res) => {
   }
 });
 
+//delete_ token
+//change_password
 
-
-app.post('/api/findEmail', (req, res) => {
-  
+app.post('/api/findEmail', (req, res) => {  
   var query = 'cn=*';
   var foundUser;    
   ad.findUsers(query, function(err, users) {
@@ -170,12 +170,10 @@ app.post('/api/findEmail', (req, res) => {
       }
     }
    });     
-   if(!foundUser){ 
-   
+   if(!foundUser){    
    return;
   }
-   else {  
-        
+   else {          
     var signOptions = {
       issuer:  req.headers.origin,
       subject:  foundUser.mail,
@@ -187,8 +185,7 @@ app.post('/api/findEmail', (req, res) => {
       username: foundUser.sAMAccountName
      }
     var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');    
-    var jwt_token = jwt.sign(payload, privateKEY, signOptions);    
-
+    var jwt_token = jwt.sign(payload, privateKEY, signOptions);   
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
