@@ -56,7 +56,8 @@ class LoginView extends Component {
         this.setState({password: crypted});
     }    
 
-    sendEmail = async () => {        
+    sendEmail = async (e) => {  
+        e.preventDefault();               
         if(this.state.email !== ''){
             const data = {
                 email: this.state.email
@@ -66,19 +67,21 @@ class LoginView extends Component {
 
             if(res !== undefined)
             {       
-                this.setState({message: 'Wysłano maila na adres:' + this.state.email});                
-                const path = `/reset/${res}`;
-                this.props.history.push(path);
+                this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
             }
         }
-        else this.setState({message: 'nie podano maila'});
+        else {
+            this.setState({message: 'Nie podano maila'});
+        }
+        this.setState({ showResetPasswordForm: false })
     };
 
     render() {        
         return (
             <header className="App-header">
+                
+                <p>{this.state.message}</p>
                 <div>
-                    <p>{this.state.message}</p>
                     <Form onKeyPress={event => { if (event.key === "Enter") { this.login(); } }} >
                         <Form.Group controlId="formlogin">
                             <Form.Label>Login </Form.Label>
