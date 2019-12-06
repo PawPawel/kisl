@@ -14,7 +14,7 @@ class LoggedView extends Component {
 			lastname:"",
             email: "",
             login: "",
-            groups: ["grupa1", "grupa2", "grupa3"]
+            groups: []
         }
         this.logout = this.logout.bind(this);
     }
@@ -22,7 +22,6 @@ class LoggedView extends Component {
     async componentDidMount(){
         const data = {
             username: this.props.match.params.username+'@ask.local',
-			token: localStorage.getItem('valToken')
 		}
         const res = await makeCall('/api/validateToken', data);
         console.log(res);
@@ -68,8 +67,6 @@ class LoggedView extends Component {
     }
 
     logout(){
-        localStorage.removeItem('valToken')
-        Cookies.remove('user');
         this.setState({logged:false, user: ""});
         const path = `/login`;
         this.props.history.push(path);
@@ -83,10 +80,10 @@ class LoggedView extends Component {
                 <Navbar className="logged-header">
                 <Navbar.Brand id="nav-header"> Witaj, {this.state.login} </Navbar.Brand>
                 <Navbar.Collapse className="justify-content-end">
-                        <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
+                        <Button variant="outline-info" className="form-button" onClick={() => this.logout()}>
                                 Zmień hasło
                         </Button>
-                        <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
+                        <Button variant="info" className="form-button" onClick={() => this.logout()}>
                                 Wyloguj
                         </Button>
                     </Navbar.Collapse>

@@ -51,7 +51,8 @@ app.post('/api/auth', (req, res) => {
        var privateKEY  = fs.readFileSync('./dummyPrivate.key', 'utf8');
 
        var token = jwt.sign(payload, privateKEY, signOptions);
-      res.json(token);
+       res.setHeader('Set-Cookie', `${token}; HttpOnly; expires:1`);
+      res.json('authenticated');
     }
     else {
       console.log('Authentication failed!');
@@ -97,7 +98,7 @@ app.post('/api/validateToken', (req, res) => {
     subject: req.body.username,
     audience: req.headers['x-forwarded-host']
   }
-  let result = verify(req.body.token, data)
+  let result = verify(req.headers.cookie, data)
   if(result){
     console.log("verified");
     res.json('verified')

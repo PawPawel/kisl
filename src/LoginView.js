@@ -31,8 +31,6 @@ class LoginView extends Component {
             if(res !== 'failed')
             {  
                 console.log(res);
-                localStorage.setItem('valToken', res);
-                Cookies.set('user', this.state.login);
                 
                 const path = `/userProfile/${this.state.login}`;
                 this.props.history.push(path);
