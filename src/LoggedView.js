@@ -3,6 +3,7 @@ import { Button, Table, Navbar, Accordion, Card, ListGroup} from "react-bootstra
 import './App.css';
 import makeCall from './utils';
 import Cookies from 'js-cookie';
+import AdminView from './AdminView';
 
 class LoggedView extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class LoggedView extends Component {
             login: "",
             groups: ["grupa1", "grupa2", "grupa3"]
         }
+        this.logout = this.logout.bind(this);
     }
 
     async componentDidMount(){
@@ -30,9 +32,12 @@ class LoggedView extends Component {
         }
         else{
             this.setState({login: this.props.match.params.username}, 	
-                function() { 
-                    this.getUserData();
-                    this.getGroups();
+                async function() { 
+                    console.log(this.state);
+                    if(this.state.login !== 'admin'){
+                        this.getUserData();
+                        this.getGroups();
+                    }
                 }
             );
         }
@@ -71,65 +76,87 @@ class LoggedView extends Component {
     }
     
     render() {
-        return(
-        <div className="user-info">
-            <Navbar className="logged-header">
-               <Navbar.Brand id="nav-header"> Witaj, {this.state.login} </Navbar.Brand>
-               <Navbar.Collapse className="justify-content-end">
-                    <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
-                            Zmień hasło
-                    </Button>
-                    <Button variant="info" className="form-button" onClick={() => this.logout()}>
-                            Wyloguj
-                    </Button>
-                </Navbar.Collapse>
-            </Navbar>
-            <div className="user-container">
-                <Table striped bordered hover variant="dark">
-                    <tbody>
-                        <tr>
-                            <th> Imię i nazwisko </th>
-                            <td>{this.state.name} {this.state.lastname}</td>
-                        </tr>
-                        <tr>
-                            <th>
-                                Login
-                            </th>
-                            <td>
-                                {this.state.login}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                Email
-                            </th>
-                            <td>
-                                {this.state.email}
-                            </td>
-                        </tr>
-                    </tbody>
-                </Table>
-                <Accordion id="groups-accordion">
-                    <Card>
-                        <Card.Header>
-                            <Accordion.Toggle as={Button} variant="info" eventKey="0">
-                                Pokaż Grupy
-                            </Accordion.Toggle>
-                        </Card.Header>
-                        <Accordion.Collapse eventKey="0">
-                            <Card.Body>
-                                <ListGroup>
-                                    {this.state.groups.map((i) => this.createListItem(i))}
-                                </ListGroup>
-                            </Card.Body>
-                        </Accordion.Collapse>
-                    </Card>
-                </Accordion>
-            </div>
+        if(this.state.login !== 'admin')
+       { 
+           return(
+            <div className="user-info">
+                <Navbar className="logged-header">
+                <Navbar.Brand id="nav-header"> Witaj, {this.state.login} </Navbar.Brand>
+                <Navbar.Collapse className="justify-content-end">
+                        <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
+                                Zmień hasło
+                        </Button>
+                        <Button variant="info" className="form-button" onClick={() => this.props.logout()}>
+                                Wyloguj
+                        </Button>
+                    </Navbar.Collapse>
+                </Navbar>
+                <div className="user-container">
+                    <Table striped bordered hover variant="dark">
+                        <tbody>
+                            <tr>
+                                <th> Imię i nazwisko </th>
+                                <td>{this.state.name} {this.state.lastname}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Login
+                                </th>
+                                <td>
+                                    {this.state.login}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Email
+                                </th>
+                                <td>
+                                    {this.state.email}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                    <Accordion className="accordion">
+                        <Card>
+                            <Card.Header>
+                                <Accordion.Toggle as={Button} variant="info" eventKey="0">
+                                    Pokaż Grupy
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <ListGroup>
+                                        {this.state.groups.map((i) => this.createListItem(i))}
+                                    </ListGroup>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                </div>
 
-        </div>
-        )
+            </div>
+        )} 
+        else {
+            return (           
+                <div className="user-info">     
+                    <Navbar className="logged-header">
+                    <Navbar.Brand id="nav-header"> Witaj, {this.state.login} </Navbar.Brand>
+                    <Navbar.Collapse className="justify-content-end">
+                            <Button variant="outline-info" className="form-button" onClick={() => this.props.logout()}>
+                                    Zmień hasło
+                            </Button>
+                            <Button variant="info" className="form-button" onClick={() => this.logout()}>
+                                    Wyloguj
+                            </Button>
+                        </Navbar.Collapse>
+                    </Navbar>
+                    <AdminView />
+                </div>
+            )
+        
+        }
     }
+    
 }
 
 export default LoggedView;
