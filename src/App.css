@@ -60,3 +60,8 @@ body {
 #groups-accordion{
   color:black;
 }
+
+.ResetPassword {
+  min-height: 100vh;
+  color: white;
+}

@@ -6,9 +6,11 @@ class ResetPassword extends Component {
 
     render(){
       return(
-        <div className="ResetPassword">
-          <p>kotek</p>
-        </div>
+         <header className="ResetPassword">
+          <div>
+            <p>ppp</p>
+         </div>
+     </header>
       )
     }
 
@@ -21,7 +23,7 @@ class ResetPassword extends Component {
         const path = `/login`;
         this.props.history.push(path);
     }    
-    }
+  }
 }
 
 export default ResetPassword;

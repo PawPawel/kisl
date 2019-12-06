@@ -66,7 +66,7 @@ class LoginView extends Component {
             console.log('here is the res in LoginView: ', res);
 
             if(res !== undefined)
-            {       
+            {                   
                 this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
             }
         }
