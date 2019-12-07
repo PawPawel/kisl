@@ -1,5 +1,6 @@
 const express = require('express');
 const ActiveDirectory = require('activedirectory');
+const AD = require('ad');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
 const jwt  = require('jsonwebtoken');
@@ -17,7 +18,12 @@ var config = { url: 'ldap://192.168.56.103',
                password: 'kotki123!'
             }
 
-var ad = new ActiveDirectory(config);
+var ad_dir = new ActiveDirectory(config);
+const new_ad = new AD({
+  url: 'ldap://192.168.56.103',
+  user: 'administrator@ask.local',
+  pass: 'kotki123!'
+});
 
 var resetTokens = [];
 
@@ -26,7 +32,7 @@ app.post('/api/auth', (req, res) => {
   var dec = decipher.update(req.body.password,'hex','utf8')
   dec += decipher.final('utf8');
 
-  ad.authenticate(req.body.username, dec, function(err, auth) {
+  ad_dir.authenticate(req.body.username, dec, function(err, auth) {
     if (err) {
       console.log('ERROR: '+JSON.stringify(err));
       res.json('failed');
@@ -61,7 +67,7 @@ app.post('/api/auth', (req, res) => {
  });
  
  app.post('/api/user', (req, res) => {
-  ad.findUser(req.body.username, function(err, user) {
+  ad_dir.findUser(req.body.username, function(err, user) {
 	  if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
@@ -108,7 +114,7 @@ app.post('/api/validateToken', (req, res) => {
  });
 
  app.post('/api/groups', (req, res) => {
-  ad.getGroupMembershipForUser(req.body.username, function(err, groups) {
+  ad_dir.getGroupMembershipForUser(req.body.username, function(err, groups) {
 	if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
@@ -121,7 +127,7 @@ app.post('/api/validateToken', (req, res) => {
 
 app.post('/api/findUsers', (req, res) => {
   var query = 'cn=*';
-  ad.findUsers(query, function(err, users) {
+  ad_dir.findUsers(query, function(err, users) {
 	  if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
@@ -135,7 +141,7 @@ app.post('/api/findUsers', (req, res) => {
 });
 
 app.post('/api/usersForGroup', (req, res) => {
-  ad.getUsersForGroup(req.body.groupName, function(err, users){
+  ad_dir.getUsersForGroup(req.body.groupName, function(err, users){
     if (err) {
       console.log('ERROR: ' +JSON.stringify(err));
       return;
@@ -150,7 +156,7 @@ app.post('/api/usersForGroup', (req, res) => {
 
 app.post('/api/findgroups', (req, res) => {
   var query = 'CN=*';
-  ad.findGroups(query,  function(err, groups) {
+  ad_dir.findGroups(query,  function(err, groups) {
 	  if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
@@ -166,10 +172,34 @@ app.post('/api/findgroups', (req, res) => {
   });
 });
 
-//delete_token
-//change_password
+
+app.post('/api/delete_token', (req, res) => { 
+  var index=0;
+  resetTokens.forEach(element => {
+    if(element.token === req.body.resetPasswordToken){           
+      resetTokens.splice(index,1);
+      }
+    index++;
+   });
+   res.json("deleted");
+});
+
+app.post('/api/change_password', async (req, res) => { 
+  var usrLogin = req.body.username+'@ask.local';
+
+  var decipher = crypto.createDecipher('aes-256-ctr', usrLogin);
+  var dec = decipher.update(req.body.password,'hex','utf8')
+  dec += decipher.final('utf8');
+    
+  //var result = await new_ad.user(usrLogin).get();
+  var result = await new_ad.user(usrLogin).password(dec);
+  console.log("201 result: ", result);
+  console.log(typeof result);
+  if(result === true) res.json("success");
+  else res.json("failed");
+});
+
 app.post('/api/reset_token', (req, res) => { 
-  console.log('127 w reset tokens',resetTokens); 
     var token_mail_pair;
   resetTokens.forEach(element => {
     if(element.token === req.body.resetPasswordToken){           
@@ -201,7 +231,7 @@ app.post('/api/reset_token', (req, res) => {
 app.post('/api/findEmail', (req, res) => {
   var query = 'cn=*';
   var foundUser;    
-  ad.findUsers(query, function(err, users) {
+  ad_dir.findUsers(query, function(err, users) {
 	  if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
 		return;
@@ -249,8 +279,7 @@ app.post('/api/findEmail', (req, res) => {
       transporter.sendMail(mailOptions, (err, response) => {        
         if (err) {
           console.error('there was an error sending email: ', err);
-        } else {   
-          console.log('resetTokens before found: ', resetTokens);          
+        } else { 
           const token_mail_pair={
             token: jwt_token,
             mail: foundUser.mail

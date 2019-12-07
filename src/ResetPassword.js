@@ -39,7 +39,6 @@ class ResetPassword extends Component {
       }
       var pass_req = number+upper_case+lower_case+special;
       if(pass_req >=3){
-        console.log(this.state.username);
         var usrLogin = this.state.username+'@ask.local'
         var cipher = crypto.createCipher('aes-256-ctr',usrLogin);
         var crypted = cipher.update(this.state.password,'utf8','hex')
@@ -47,14 +46,14 @@ class ResetPassword extends Component {
 
         const data = {
           username: this.state.username,
-          password: this.state.passwordgit
+          password: crypted
         }
         const res = await makeCall('/api/change_password', data);
         if(res !== 'failed'){  
           const toknen_to_reset ={
             resetPasswordToken: this.props.match.params.token
           }
-          await makeCall('/api/delete_token', toknen_to_reset);
+          const useless = await makeCall('/api/delete_token', toknen_to_reset);
           const path = `/login`;
           this.props.history.push(path);
         }
