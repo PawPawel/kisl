@@ -84,10 +84,10 @@ class LoggedView extends Component {
         console.log("108 pass_res: ",this.state.password_repeat);
         if (this.state.captcha_reset) {
             if (this.state.password !== this.state.password_repeat) {
-                this.setState({ message_reset: 'powtorzone haslo nie jest takie samo' });
+                this.setState({ message_reset: 'Powtórzone hasło nie jest takie samo' });
             }
             else if (this.state.password.length < 6) {
-                this.setState({ message_reset: 'hasło musi mieć co najmniej 6 znaków' });
+                this.setState({ message_reset: 'Hasło musi mieć co najmniej 6 znaków' });
             }
             else{
                 var character_ascii;
@@ -118,9 +118,9 @@ class LoggedView extends Component {
                   if(res !== 'failed'){ 
                     this.setState({ showResetPasswordForm: false })
                   }
-                  else this.setState({message_reset: 'niestety nie udało się zmienic hasła'}); 
+                  else this.setState({message_reset: 'Niestety nie udało się zmienic hasła'}); 
                 }
-                else this.setState({message_reset: 'hasło musi zawierać trzy z czterech: małą literę, dużą literę, liczbę, znak specjalny'}); 
+                else this.setState({message_reset: 'Hasło musi zawierać trzy z czterech: małą literę, dużą literę, liczbę, znak specjalny'}); 
             }  
         }
         else this.setState({ message_reset: "Potwierdź, że nie jesteś robotem" });
@@ -195,7 +195,7 @@ class LoggedView extends Component {
                                 </Form.Group>
                                 <Form.Group controlId="formPassword_repeat">
                                     <Form.Label>powtórz hasło </Form.Label>
-                                    <Form.Control type="password" placeholder="powtórz hasło" onChange={e => this.setState({ password_repeat: e.target.value })} />
+                                    <Form.Control type="password" placeholder="Powtórz hasło" onChange={e => this.setState({ password_repeat: e.target.value })} />
                                 </Form.Group>
                                 <ReCAPTCHA
                                     sitekey="6LfIAsQUAAAAAH5PeLOT8b7E5SeJLHjGf3k4NlSZ"

@@ -18,10 +18,10 @@ class ResetPassword extends Component {
 
   reset = async () => {
     if(this.state.password !== this.state.password_repeat ){
-      this.setState({message: 'powtorzone haslo nie jest takie samo'});
+      this.setState({message: 'Powtórzone hasło nie jest takie samo'});
     } 
     else if(this.state.password.length < 6){
-      this.setState({message: 'hasło musi mieć co najmniej 6 znaków'});
+      this.setState({message: 'Hasło musi mieć co najmniej 6 znaków'});
     }   
     else{
       //this.setState({message: this.state.password.length + ' ' + this.state.password.charAt(0) +' '+ this.state.password.charAt(1)+' '+ this.state.password.charCodeAt(2)});
@@ -58,11 +58,11 @@ class ResetPassword extends Component {
           this.props.history.push(path);
         }
         else {
-            this.setState({message: 'coś poszło nie tak'});
+            this.setState({message: 'Coś poszło nie tak'});
         }
       }
       else{
-        this.setState({message: 'hasło musi zawierać trzy z czterech: małą literę, dużą literę, liczbę, znak specjalny'}); 
+        this.setState({message: 'Hasło musi zawierać trzy z czterech: małą literę, dużą literę, liczbę, znak specjalny'}); 
       }
     }    
   }
@@ -78,11 +78,11 @@ class ResetPassword extends Component {
                   <Form.Control type="password" placeholder="Hasło" onChange={e => this.setState({ password: e.target.value })} />
               </Form.Group>
               <Form.Group controlId="formPassword_repeat">
-                  <Form.Label>powtórz hasło </Form.Label>
+                  <Form.Label>Powtórz hasło </Form.Label>
                   <Form.Control type="password" placeholder="powtórz hasło" onChange={e => this.setState({ password_repeat: e.target.value })} />
               </Form.Group>              
               <Button variant="info" className="form-button" onClick={() => this.reset()}>
-                      resetuj hasło
+                      Resetuj hasło
               </Button>
             </Form>
          </div>
