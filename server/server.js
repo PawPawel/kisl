@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var crypto = require('crypto');
 const jwt  = require('jsonwebtoken');
 const fs   = require('fs');
+const https = require('https');
 
 const app = express();
 const nodemailer = require('nodemailer');
@@ -12,7 +13,7 @@ const nodemailer = require('nodemailer');
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
-var config = { url: 'ldap://192.168.56.103',
+var config = { url: 'ldaps://192.168.56.103',
                baseDN: 'dc=ask,dc=local',
                username: 'administrator@ask.local',
                password: 'kotki123!'
@@ -20,11 +21,11 @@ var config = { url: 'ldap://192.168.56.103',
 
 var ad_dir = new ActiveDirectory(config);
 const new_ad = new AD({
-  url: 'ldap://192.168.56.103',
+  url: 'ldaps://192.168.56.103',
   user: 'administrator@ask.local',
   pass: 'kotki123!'
 });
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var resetTokens = [];
 
 app.post('/api/auth', (req, res) => {
@@ -75,6 +76,7 @@ app.post('/api/auth', (req, res) => {
 	 
 	  if (!user) console.log('User: ' + req.body.username + ' not found.');
 	  else {
+      console.log(user);
 		  res.json(user);
 	  }
 	});
@@ -303,8 +305,8 @@ app.post('/api/findEmail', (req, res) => {
   });
 });
 
-
-
-const port = 5000;
-
-app.listen(port, () => `Server running on port ${port}`);
+https.createServer({
+  key: fs.readFileSync('./key.pem'),
+  cert: fs.readFileSync('./cert.pem'),
+  passphrase: '1234'
+}, app).listen(5000);
