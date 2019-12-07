@@ -75,11 +75,11 @@ class ResetPassword extends Component {
             <Form onKeyPress={event => { if (event.key === "Enter") { this.reset(); } }} >
               <Form.Group controlId="formPassword">
                   <Form.Label>Hasło </Form.Label>
-                  <Form.Control type="password" placeholder="Haslo" onChange={e => this.setState({ password: e.target.value })} />
+                  <Form.Control type="password" placeholder="Hasło" onChange={e => this.setState({ password: e.target.value })} />
               </Form.Group>
               <Form.Group controlId="formPassword_repeat">
                   <Form.Label>powtórz hasło </Form.Label>
-                  <Form.Control type="password" placeholder="powtorz haslo" onChange={e => this.setState({ password_repeat: e.target.value })} />
+                  <Form.Control type="password" placeholder="powtórz hasło" onChange={e => this.setState({ password_repeat: e.target.value })} />
               </Form.Group>              
               <Button variant="info" className="form-button" onClick={() => this.reset()}>
                       resetuj hasło
@@ -106,3 +106,5 @@ class ResetPassword extends Component {
 }
 
 export default ResetPassword;
+
+

@@ -101,7 +101,7 @@ class LoginView extends Component {
                         />
                         <Button variant="outline-info" type="button" className="form-button" onClick={() => { this.setState({ showResetPasswordForm: true }) }}>
                             Zapomnialem hasla
-                    </Button>
+                        </Button>
                         <Button variant="info" className="form-button" onClick={() => this.login()}>
                             Zaloguj
                     </Button>
