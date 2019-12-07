@@ -39,7 +39,7 @@ class LoginView extends Component {
                 this.props.history.push(path);
             }
             else {
-                this.setState({message: 'Nieprawidlowe dane logowania'});
+                this.setState({message: 'Nieprawidłowe dane logowania'});
             }
         }
         else{
@@ -70,7 +70,7 @@ class LoginView extends Component {
                     if(res !== undefined){                   
                         this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
                     }
-                    else this.setState({message: 'coś poszło nie tak z wysyłaniem maila: ' + this.state.email});
+                    else this.setState({message: 'Coś poszło nie tak z wysyłaniem maila: ' + this.state.email});
                     this.setState({czy_reset_zajety: false});
                     this.setState({ showResetPasswordForm: false })
                 }  
@@ -92,7 +92,7 @@ class LoginView extends Component {
                             <Form.Control type="text" placeholder="Login" onChange={e => this.setState({ login: e.target.value })} />
                         </Form.Group>
                         <Form.Group controlId="formPassword">
-                            <Form.Label>Haslo </Form.Label>
+                            <Form.Label>Hasło </Form.Label>
                             <Form.Control type="password" placeholder="Haslo" onChange={e => this.savePassword(e.target.value)} />
                         </Form.Group>
                         <ReCAPTCHA
@@ -100,7 +100,7 @@ class LoginView extends Component {
                             onChange={() => this.setState({ captcha: true })}
                         />
                         <Button variant="outline-info" type="button" className="form-button" onClick={() => { this.setState({ showResetPasswordForm: true }) }}>
-                            Zapomnialem hasla
+                            Zapomniałem hasła
                         </Button>
                         <Button variant="info" className="form-button" onClick={() => this.login()}>
                             Zaloguj
