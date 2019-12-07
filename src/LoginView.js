@@ -13,9 +13,12 @@ class LoginView extends Component {
             login:"",
             password:"",
             message: "Witaj na naszej stronie",
+            message_reset: "Wprowadź adres e-mail aby zresetować swoje hasło",
             captcha: true,
+            captcha_reset: false,
             showResetPasswordForm: false,
-            email: ""
+            email: "",
+            czy_reset_zajety: false
         }
     }
 
@@ -55,23 +58,27 @@ class LoginView extends Component {
     }    
 
     sendEmail = async (e) => {  
-        e.preventDefault();               
-        if(this.state.email !== ''){
-            const data = {
-                email: this.state.email
-            }
-            const res = await makeCall('/api/findEmail', data);
-            console.log('here is the res in LoginView: ', res);
-
-            if(res !== undefined)
-            {                   
-                this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
-            }
-        }
-        else {
-            this.setState({message: 'Nie podano maila'});
-        }
-        this.setState({ showResetPasswordForm: false })
+        e.preventDefault();         
+        if(this.state.captcha_reset){
+            if(this.state.email !== ''){
+                if(this.state.czy_reset_zajety === false){            
+                    this.setState({czy_reset_zajety: true});
+                    const data = {
+                        email: this.state.email
+                    }
+                    const res = await makeCall('/api/findEmail', data);  
+                    if(res !== undefined){                   
+                        this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
+                    }
+                    else this.setState({message: 'coś poszło nie tak z wysyłaniem maila: ' + this.state.email});
+                    this.setState({czy_reset_zajety: false});
+                    this.setState({ showResetPasswordForm: false })
+                }  
+                else this.setState({message_reset: 'Spokojnie, już wysłałeś maila'});
+            } 
+            else this.setState({message_reset: 'Nie podano maila'});
+        } 
+        else this.setState({message_reset: "Potwierdź, że nie jesteś robotem"})
     };
 
     render() {        
@@ -106,12 +113,16 @@ class LoginView extends Component {
                         <Modal.Body>
                             <Form onSubmit={this.sendEmail}>
                                 <Form.Group controlId="formEmail">
-                                    <Form.Label>Wprowadź adres e-mail aby zresetować swoje hasło</Form.Label>
+                                    <Form.Label>{this.state.message_reset}</Form.Label>
                                     <Form.Control type="email" placeholder="Email" onChange={e => this.setState({ email: e.target.value })} />
                                 </Form.Group>
+                                <ReCAPTCHA
+                                    sitekey="6LfIAsQUAAAAAH5PeLOT8b7E5SeJLHjGf3k4NlSZ"
+                                    onChange={() => this.setState({ captcha_reset: true })}
+                                />
                                 <Button variant="primary" type="submit" >
                                     Resetuj hasło
-                        </Button>
+                                </Button>
                             </Form>
                         </Modal.Body>
                     </Modal>
