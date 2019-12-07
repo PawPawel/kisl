@@ -21,6 +21,7 @@ class LoggedView extends Component {
             captcha_reset: false,
             showResetPasswordForm: false,
             message_reset: "Wprowadź hasło",
+            opis: "ten użytkownik nie ma opisu",
             groups: []
         }
         this.logout = this.logout.bind(this);
@@ -42,7 +43,7 @@ class LoggedView extends Component {
                     console.log(this.state);
                     if (this.state.login !== 'admin') {
                         this.getUserData();
-                        this.getGroups();
+                        this.getGroups();                        
                     }
                 }
             );
@@ -54,7 +55,8 @@ class LoggedView extends Component {
             username: this.state.login
         }
         const res = await makeCall('/api/user', data);
-        this.setState({ user: res, name: res.givenName, lastname: res.sn, email: res.userPrincipalName });
+        this.setState({ user: res, name: res.givenName, lastname: res.sn, email: res.userPrincipalName});          
+        if(res.description) this.setState({opis: res.description});
     }
 
     getGroups = async () => {
@@ -151,7 +153,7 @@ class LoggedView extends Component {
                                 <tr>
                                     <th>
                                         Login
-                                </th>
+                                    </th>
                                     <td>
                                         {this.state.login}
                                     </td>
@@ -159,9 +161,17 @@ class LoggedView extends Component {
                                 <tr>
                                     <th>
                                         Email
-                                </th>
+                                    </th>
                                     <td>
                                         {this.state.email}
+                                    </td>
+                                </tr>                                
+                                <tr>
+                                    <th>
+                                        Opis
+                                    </th>
+                                    <td>
+                                        {this.state.opis}
                                     </td>
                                 </tr>
                             </tbody>
