@@ -194,10 +194,9 @@ app.post('/api/change_password', async (req, res) => {
   dec += decipher.final('utf8');
     
   //var result = await new_ad.user(usrLogin).get();
-  var result = await new_ad.user(usrLogin).password(dec);
-  console.log("201 result: ", result);
-  console.log(typeof result);
-  if(result === true) res.json("success");
+  var result = await new_ad.user(usrLogin).password(dec); //nie pytaj nawet
+  var result1 = await new_ad.user(usrLogin).password(dec); //ActiveDirectory to żart
+  if(result.success === true && result1.success === true) res.json("success");
   else res.json("failed");
 });
 
@@ -275,7 +274,7 @@ app.post('/api/findEmail', (req, res) => {
         text:
           'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
           + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
-          + `http://localhost:3001/reset/${jwt_token}\n\n`
+          + `http://localhost:3000/reset/${jwt_token}\n\n`
           + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
       };       
       transporter.sendMail(mailOptions, (err, response) => {        

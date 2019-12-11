@@ -18,7 +18,7 @@ class LoggedView extends Component {
             login: "",
             password: "",
             password_repeat: "",
-            captcha_reset: false,
+            captcha_reset: true,
             showResetPasswordForm: false,
             message_reset: "Wprowadź hasło",
             opis: "ten użytkownik nie ma opisu",
