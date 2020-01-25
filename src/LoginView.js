@@ -14,7 +14,7 @@ class LoginView extends Component {
             password:"",
             message: "Witaj na naszej stronie",
             message_reset: "Wprowadź adres e-mail aby zresetować swoje hasło",
-            captcha: true,
+            captcha: false,
             captcha_reset: false,
             showResetPasswordForm: false,
             email: "",
@@ -23,7 +23,7 @@ class LoginView extends Component {
     }
 
     login = async () => {
-        if(this.state.captcha){
+        if(this.state.captcha){            
             var usrLogin = this.state.login+'@ask.local';           
             const data = {
                 username: usrLogin,
@@ -59,20 +59,21 @@ class LoginView extends Component {
 
     sendEmail = async (e) => {  
         e.preventDefault();         
-        if(this.state.captcha_reset){
+        if(this.state.captcha_reset){           
             if(this.state.email !== ''){
                 if(this.state.czy_reset_zajety === false){            
                     this.setState({czy_reset_zajety: true});
                     const data = {
                         email: this.state.email
                     }
-                    const res = await makeCall('/api/findEmail', data);  
+                    const res = await makeCall('/api/findEmail', data);
                     if(res !== undefined){                   
                         this.setState({message: 'Wysłano maila na adres: ' + this.state.email});
                     }
                     else this.setState({message: 'Coś poszło nie tak z wysyłaniem maila: ' + this.state.email});
                     this.setState({czy_reset_zajety: false});
-                    this.setState({ showResetPasswordForm: false })
+                    this.setState({ showResetPasswordForm: false });
+                    this.setState({captcha_reset: false});
                 }  
                 else this.setState({message_reset: 'Spokojnie, już wysłałeś maila'});
             } 

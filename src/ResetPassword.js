@@ -24,7 +24,6 @@ class ResetPassword extends Component {
       this.setState({message: 'Hasło musi mieć co najmniej 6 znaków'});
     }   
     else{
-      //this.setState({message: this.state.password.length + ' ' + this.state.password.charAt(0) +' '+ this.state.password.charAt(1)+' '+ this.state.password.charCodeAt(2)});
       var character_ascii;
       var number=0;
       var upper_case=0;
@@ -49,7 +48,7 @@ class ResetPassword extends Component {
           password: crypted
         }
         const res = await makeCall('/api/change_password', data);
-        if(res !== 'failed'){  
+        if(res === "success"){  
           const toknen_to_reset ={
             resetPasswordToken: this.props.match.params.token
           }
@@ -65,7 +64,7 @@ class ResetPassword extends Component {
         this.setState({message: 'Hasło musi zawierać trzy z czterech: małą literę, dużą literę, liczbę, znak specjalny'}); 
       }
     }    
-  }
+  };
 
     render(){
       return(

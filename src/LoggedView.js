@@ -18,7 +18,7 @@ class LoggedView extends Component {
             login: "",
             password: "",
             password_repeat: "",
-            captcha_reset: true,
+            captcha_reset: false,
             showResetPasswordForm: false,
             message_reset: "Wprowadź hasło",
             opis: "ten użytkownik nie ma opisu",
@@ -82,8 +82,6 @@ class LoggedView extends Component {
     }
     resetPassword = async (e) => {
         e.preventDefault();
-        console.log("108 pass: ",this.state.password);
-        console.log("108 pass_res: ",this.state.password_repeat);
         if (this.state.captcha_reset) {
             if (this.state.password !== this.state.password_repeat) {
                 this.setState({ message_reset: 'Powtórzone hasło nie jest takie samo' });
@@ -110,15 +108,15 @@ class LoggedView extends Component {
                   var cipher = crypto.createCipher('aes-256-ctr',usrLogin);
                   var crypted = cipher.update(this.state.password,'utf8','hex')
                   crypted += cipher.final('hex');
-                  console.log("108 username: ",this.props.match.params.username);
 
                   const data = {
                     username: this.props.match.params.username,
                     password: crypted
                   }
                   const res = await makeCall('/api/change_password', data);
-                  if(res !== 'failed'){ 
-                    this.setState({ showResetPasswordForm: false })
+                  if(res === "success"){ 
+                    this.setState({captcha_reset: false});
+                    this.setState({ showResetPasswordForm: false });
                   }
                   else this.setState({message_reset: 'Niestety nie udało się zmienic hasła'}); 
                 }

@@ -16,14 +16,14 @@ app.use(bodyParser.json());
 var config = { url: 'ldaps://192.168.56.103',
                baseDN: 'dc=ask,dc=local',
                username: 'administrator@ask.local',
-               password: 'kotki123!'
+               password: 'kotek123!'
             }
 
 var ad_dir = new ActiveDirectory(config);
 const new_ad = new AD({
   url: 'ldaps://192.168.56.103',
   user: 'administrator@ask.local',
-  pass: 'kotki123!'
+  pass: 'kotek123!'
 });
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var resetTokens = [];
@@ -229,13 +229,14 @@ app.post('/api/reset_token', (req, res) => {
   }
 });
 
-app.post('/api/findEmail', (req, res) => {
+app.post('/api/findEmail', (req, res) => {  
   var query = 'cn=*';
   var foundUser;    
   ad_dir.findUsers(query, function(err, users) {
 	  if (err) {
 		console.log('ERROR: ' +JSON.stringify(err));
-		return;
+    res.json({response: "undefined"});
+    return;
     }    
    users.forEach(element => {
     if(element.mail){           
@@ -245,8 +246,9 @@ app.post('/api/findEmail', (req, res) => {
     }
    });     
    if(!foundUser){    
-   return;
-  }
+    res.json({response: "undefined"});
+    return;
+   }
    else {          
     var signOptions = {
       issuer:  req.headers.origin,
@@ -297,7 +299,7 @@ app.post('/api/findEmail', (req, res) => {
            if(found===false){            
             resetTokens.push(token_mail_pair);     
            }            
-          res.json(jwt_token); 
+          res.json(jwt_token);
         }
       });
     }
